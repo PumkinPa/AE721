@@ -1,4 +1,6 @@
 %% MAIN EXECUTION
+inputs;
+
 eps_i     = pixelAngles(N, w_pixel, f);
 eps_i_deg = rad2deg(eps_i);
 IFOV_i    = computeIFOV(eps_i, w_pixel, f);
