@@ -11,17 +11,17 @@
 %   - Rotary-wing aircraft
 %   - Missiles
 %
-% MODEL 
-%   A_eff(elev, az) = A_top   * |cos(elev)|
-%                    + A_front * |sin(elev) * cos(az)|
-%                    + A_side  * |sin(elev) * sin(az)|
+% MODEL
+%   A_eff(impact, approach) = A_top   * |cos(impact)|
+%                    + A_front * |sin(impact) * cos(approach)|
+%                    + A_side  * |sin(impact) * sin(approach)|
 %
-%   elev = elevation angle, measured down from straight-down:
-%          elev = 0 deg -> looking straight down (pure top view)
-%          elev = 90 deg  -> looking level at the horizon (no top face visible)
-%   az   = azimuth angle about the vertical axis:
-%          az = 0 deg  -> nose/tail-on
-%          az = 90 deg -> broadside
+%   impact   = impact angle, measured down from straight-down:
+%          impact = 0 deg -> looking straight down (pure top view)
+%          impact = 90 deg  -> looking level at the horizon (no top face visible)
+%   approach = approach angle about the vertical axis:
+%          approach = 0 deg  -> nose/tail-on
+%          approach = 90 deg -> broadside
 %
 % DATA SOURCE
 % Values are taken directly from calculated face areas where given
@@ -35,39 +35,39 @@ clear; clc; close all;
 fuselageWidthFrac = 0.12;   % ASSUMPTION
 
 
-% USER INPUT:Pan Angle
-% Choose angle 
+% USER INPUT: Pan Angle
+% Choose angle
 
 fprintf('Pan sweep type:\n');
-fprintf('  1 = Sweep AZIMUTH (nose <-> side) at a fixed ELEVATION\n');
-fprintf('  2 = Sweep ELEVATION (top-down <-> level) at a fixed AZIMUTH\n');
+fprintf('  1 = Sweep APPROACH ANGLE (nose <-> side) at a fixed IMPACT ANGLE\n');
+fprintf('  2 = Sweep IMPACT ANGLE (top-down <-> level) at a fixed APPROACH ANGLE\n');
 sweepType = input('Enter 1 or 2 [default 1]: ');
 if isempty(sweepType)
     sweepType = 1;
 end
 
 if sweepType == 1
-    fixedElev_deg = input('Enter the fixed elevation angle in deg (0=level, 90=straight down) [default 45]: ');
-    if isempty(fixedElev_deg)
-        fixedElev_deg = 45;
+    fixedImpact_deg = input('Enter the fixed impact angle in deg (0=level, 90=straight down) [default 45]: ');
+    if isempty(fixedImpact_deg)
+        fixedImpact_deg = 45;
     end
-    az_deg = 0:1:90; % 0 = nose-on, 90 = broadside
-    elev_deg = fixedElev_deg * ones(size(az_deg));
-    sweepVar_deg = az_deg;
-    sweepLabel = sprintf('Azimuth, az (deg)  [elevation fixed at %g deg]', fixedElev_deg);
+    approach_deg = 0:1:90; % 0 = nose-on, 90 = broadside
+    impact_deg = fixedImpact_deg * ones(size(approach_deg));
+    sweepVar_deg = approach_deg;
+    sweepLabel = sprintf('Approach Angle (deg)  [impact angle fixed at %g deg]', fixedImpact_deg);
 else
-    fixedAz_deg = input('Enter the fixed azimuth angle in deg (0=nose-on, 90=broadside) [default 0]: ');
-    if isempty(fixedAz_deg)
-        fixedAz_deg = 0;
+    fixedApproach_deg = input('Enter the fixed approach angle in deg (0=nose-on, 90=broadside) [default 0]: ');
+    if isempty(fixedApproach_deg)
+        fixedApproach_deg = 0;
     end
-    elev_deg = 0:1:90; % 0 = level, 0 = straight down
-    az_deg = fixedAz_deg * ones(size(elev_deg));
-    sweepVar_deg = elev_deg;
-    sweepLabel = sprintf('Elevation, elev (deg)  [azimuth fixed at %g deg]', fixedAz_deg);
+    impact_deg = 0:1:90; % 0 = level, 90 = straight down
+    approach_deg = fixedApproach_deg * ones(size(impact_deg));
+    sweepVar_deg = impact_deg;
+    sweepLabel = sprintf('Impact Angle (deg)  [approach angle fixed at %g deg]', fixedApproach_deg);
 end
 
-elev_rad = deg2rad(elev_deg);
-az_rad = deg2rad(az_deg);
+impact_rad = deg2rad(impact_deg);
+approach_rad = deg2rad(approach_deg);
 
 % TARGET LIBRARY
 % Each target: name, category, A_front [ft^2], A_side [ft^2], A_top [ft^2]
@@ -75,11 +75,11 @@ az_rad = deg2rad(az_deg);
 targets = struct('name', {}, 'category', {}, 'Afront', {}, 'Aside', {}, 'Atop', {}, 'src', {});
 
 % Buildings / fixed infrastructure
-targets(end+1) = mkTarget('Building (generic 3-story)', 'Infrastructure', 2200, 2200, 2500, 'S'); % square 50x50 footprint 
+targets(end+1) = mkTarget('Building (generic 3-story)', 'Infrastructure', 2200, 2200, 2500, 'S'); % square 50x50 footprint
 
 targets(end+1) = mkTarget('Radar Site Building (RRH)', 'Infrastructure', 800, 1312, 4100, 'S'); % 50ft face=800, 82ft face=1312, roof=4100
 
-targets(end+1) = mkTarget('Radar Dome (radome)', 'Infrastructure', 1385, 1385, 1385, 'S'); % axisymmetric dome 
+targets(end+1) = mkTarget('Radar Dome (radome)', 'Infrastructure', 1385, 1385, 1385, 'S'); % axisymmetric dome
 
 % Ground vehicles (trucks)
 targets(end+1) = mkTarget('Light Tactical Vehicle', 'Ground Vehicle', 42, 90, 105, 'S');
@@ -88,7 +88,7 @@ targets(end+1) = mkTarget('Medium Tactical Vehicle / 2.5-Ton Cargo', 'Ground Veh
 
 targets(end+1) = mkTarget('Heavy Tactical Truck', 'Ground Vehicle', 80, 350, 280, 'S');
 
-% Small boat 
+% Small boat
 boatL = 40; boatW = 12; boatH = 5;
 targets(end+1) = mkTarget('Small Boat', 'Maritime', boatW*boatH, boatL*boatH, 500, 'D');
 
@@ -103,7 +103,7 @@ for i = 1:size(acft,1)
     targets(end+1) = mkTarget(name, 'Fixed-Wing Aircraft', Afront, Aside, Awing, 'D');
 end
 
-% Drone (Class 3+) 
+% Drone (Class 3+)
 % Same approximation approach as fixed-wing aircraft above
 
 droneL = 35; droneSpan = 60; droneH = 8; droneWing = 175;
@@ -127,9 +127,9 @@ end
 
 %% COMPUTE EFFECTIVE AREA CURVES
 for i = 1:numel(targets)
-    top_term   = targets(i).Atop   .* abs(cos(elev_rad));
-    front_term = targets(i).Afront .* abs(sin(elev_rad) .* cos(az_rad));
-    side_term  = targets(i).Aside  .* abs(sin(elev_rad) .* sin(az_rad));
+    top_term   = targets(i).Atop   .* abs(cos(impact_rad));
+    front_term = targets(i).Afront .* abs(sin(impact_rad) .* cos(approach_rad));
+    side_term  = targets(i).Aside  .* abs(sin(impact_rad) .* sin(approach_rad));
     targets(i).Aeff = top_term + front_term + side_term;
 end
 
@@ -154,14 +154,14 @@ for c = 1:numel(categories)
     end
     hold off;
     grid on;
-    xlabel(sweepLabel);
-    ylabel('Effective area, A_{eff} (ft^2)');
+    xlabel(sweepLabel, 'FontWeight', 'bold', 'Color', 'k');
+    ylabel('Effective area, A_{eff} (ft^2)', 'FontWeight', 'bold', 'Color', 'k');
     title(['Effective Area vs. Pan - ' cat]);
     xlim([min(sweepVar_deg) max(sweepVar_deg)]);
     legend('Location','bestoutside');
 end
 
-%% HELPER FUNCTION 
+%% HELPER FUNCTION
 function t = mkTarget(name, category, Afront, Aside, Atop, src)
     t.name = name;
     t.category = category;
