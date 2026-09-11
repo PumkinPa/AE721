@@ -1,10 +1,8 @@
-%% SECTION 2 MASTER SCRIPT
-
-
-%% ---- SENSOR PARAMETERS (your design choices) ----
-N        = 128;          % total pixels [-]
-w_pixel  = 30e-6;        % pixel pitch [m]
-f        = 0.05;         % focal length [m]
+%% Inputs
+%% Sensor parameters
+num_pixels       = 128;          
+pixel_pitch  = 30e-6;% m
+focal_length        = 0.05;% m
 
 %% ---- TARGET DATA (from Section 1) ----
 % One fuzing distance r per target from your Step 5
