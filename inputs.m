@@ -11,6 +11,7 @@ t_wall    = 0.315;   % wall thickness [in]
 rho_c     = 0.06141; % explosive density [lbf/in^3]
 % Material Densities [lbf/in^3]: AISI 4340 Steel, Ti-6Al-4V Titanium, 7075-T6 Al
 rho_m = 0.2836; % [lb/in^3] individual material density Steel AISI 4340
+rho_m_names = {'Steel (AISI 4340)'};
 % rho_m     = [0.2836; 0.16004; 0.06900];
 % rho_m_names = {'Steel (AISI 4340)', 'Titanium (Ti-6Al-4V)', 'Aluminum (7075-T6)'};
 L_warhead = 39;      % warhead length [in]
