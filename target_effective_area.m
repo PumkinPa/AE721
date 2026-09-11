@@ -1,33 +1,4 @@
 %% Target effective area
-%
-% Computes and plots the effective (presented) projected area A_eff for
-% a library of target types, as seen from an arbitrary viewing direction
-% defined by two angles:
-%   - Buildings / Radar sites
-%   - Ground vehicles (light/medium/heavy trucks)
-%   - Small boats
-%   - Fixed-wing aircraft (fighters, cargo)
-%   - Drones (Class 3+)
-%   - Rotary-wing aircraft
-%   - Missiles
-%
-% MODEL
-%   A_eff(impact, approach) = A_top   * |cos(impact)|
-%                    + A_front * |sin(impact) * cos(approach)|
-%                    + A_side  * |sin(impact) * sin(approach)|
-%
-%   impact   = impact angle, measured down from straight-down:
-%          impact = 0 deg -> looking straight down (pure top view)
-%          impact = 90 deg  -> looking level at the horizon (no top face visible)
-%   approach = approach angle about the vertical axis:
-%          approach = 0 deg  -> nose/tail-on
-%          approach = 90 deg -> broadside
-%
-% DATA SOURCE
-% Values are taken directly from calculated face areas where given
-% (buildings, radar site, trucks). Where outer dimensions were
-% given (aircraft, boats, drones, rotorcraft, missiles), front/side/top
-% areas are calculated using the simple approximations. Adjust the tunable
 
 clc; close all;
 
