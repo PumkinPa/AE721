@@ -9,7 +9,8 @@ focalLength = 0.05;   % m
 Do        = 5;       % outer diameter [in]
 t_wall    = 0.315;   % wall thickness [in]
 rho_c     = 0.06141; % explosive density [lbf/in^3]
-rho_m     = 0.2836;  % casing material density, steel [lbf/in^3]
+rho_m = [0.2836; 0.16004 ;0.06900]; % Material Density [lbf/in3] 
+% Material Densities Used are AISI 4340 Steel, Ti-6Al-4V Titanium, 7075-T6
 L_warhead = 39;      % warhead length [in]
 Pd_req    = 0.90;    % required damage probability (90%)
 approach_deg = 0;    % approach angle [deg]: 0 = nose-on, 90 = broadside
