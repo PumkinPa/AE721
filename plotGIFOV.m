@@ -1,4 +1,4 @@
-function plotGIFOV(eps_i_deg, GIFOV_cell, phi_vec, target_name)
+function plotGIFOV(eps_i_deg, GIFOV_cell, phi_vec, target_name) %Declan Kurtz
     % INPUTS:
     %   eps_i_deg  : pixel angles in degrees [vector]
     %   GIFOV_cell : cell array, one GIFOV vector per phi
