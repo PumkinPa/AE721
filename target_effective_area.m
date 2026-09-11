@@ -1,6 +1,7 @@
 function [targets, sweepVar_deg, sweepLabel] = target_effective_area(sweepType, fixedAngle_deg)
-%
-%   MODEL
+%   Brayden Williams
+%  
+%  MODEL
 %   A_eff(impact, approach) = A_top   * |cos(impact)|
 %                    + A_front * |sin(impact) * cos(approach)|
 %                    + A_side  * |sin(impact) * sin(approach)|
