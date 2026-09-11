@@ -1,36 +1,10 @@
 function [targets, sweepVar_deg, sweepLabel] = target_effective_area(sweepType, fixedAngle_deg)
-%TARGET_EFFECTIVE_AREA  Compute and plot effective (presented) projected area.
-%   TARGETS = TARGET_EFFECTIVE_AREA() prompts for a sweep type and fixed
-%   angle, then computes and plots A_eff for the shared target library.
-%
-%   TARGETS = TARGET_EFFECTIVE_AREA(SWEEPTYPE, FIXEDANGLE_DEG) skips the
-%   prompts so it can be called from another file/script.
-%       SWEEPTYPE = 1 : sweep APPROACH ANGLE (nose <-> side) at a fixed
-%                       IMPACT ANGLE = FIXEDANGLE_DEG (default 45)
-%       SWEEPTYPE = 2 : sweep IMPACT ANGLE (top-down <-> level) at a fixed
-%                       APPROACH ANGLE = FIXEDANGLE_DEG (default 0)
-%
-%   [TARGETS, SWEEPVAR_DEG, SWEEPLABEL] = TARGET_EFFECTIVE_AREA(...) also
-%   returns the swept angle vector [deg] and its plot label.
 %
 %   MODEL
 %   A_eff(impact, approach) = A_top   * |cos(impact)|
 %                    + A_front * |sin(impact) * cos(approach)|
 %                    + A_side  * |sin(impact) * sin(approach)|
 %
-%   impact   = impact angle, measured down from straight-down:
-%          impact = 0 deg  -> looking straight down (pure top view)
-%          impact = 90 deg -> looking level at the horizon (no top face visible)
-%   approach = approach angle about the vertical axis:
-%          approach = 0 deg  -> nose/tail-on
-%          approach = 90 deg -> broadside
-%
-%   DATA SOURCE
-%   Values are taken directly from calculated face areas where given
-%   (buildings, radar site, trucks). Where outer dimensions were given
-%   (aircraft, boats, drones, rotorcraft, missiles), front/side/top areas
-%   are calculated using simple approximations. See targetLibrary.m.
-
 if nargin < 1 || isempty(sweepType)
     fprintf('Pan sweep type:\n');
     fprintf('  1 = Sweep APPROACH ANGLE (nose <-> side) at a fixed IMPACT ANGLE\n');
