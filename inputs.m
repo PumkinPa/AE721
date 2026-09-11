@@ -10,11 +10,14 @@ Do        = 5;       % outer diameter [in]
 t_wall    = 0.315;   % wall thickness [in]
 rho_c     = 0.06141; % explosive density [lbf/in^3]
 % Material Densities [lbf/in^3]: AISI 4340 Steel, Ti-6Al-4V Titanium, 7075-T6 Al
-rho_m     = [0.2836; 0.16004; 0.06900];
-rho_m_names = {'Steel (AISI 4340)', 'Titanium (Ti-6Al-4V)', 'Aluminum (7075-T6)'};
+rho_m = 0.2836; % [lb/in^3] individual material density Steel AISI 4340
+% rho_m     = [0.2836; 0.16004; 0.06900];
+% rho_m_names = {'Steel (AISI 4340)', 'Titanium (Ti-6Al-4V)', 'Aluminum (7075-T6)'};
 L_warhead = 39;      % warhead length [in]
 Pd_req    = 0.90;    % required damage probability (90%)
 approach_deg = 0;    % approach angle [deg]: 0 = nose-on, 90 = broadside
+m = 30.8647; % grains (2 grams) Minimum fragment size weight considered
+phi_half = 10; % [degrees] Provided Angle for frag half angle
 
 %% Impact angles
 phi_vec = [45, 60, 90];  % [deg]
