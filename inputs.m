@@ -9,14 +9,12 @@ focalLength = 0.05;   % m
 Do        = 5;       % outer diameter [in]
 t_wall    = 0.315;   % wall thickness [in]
 rho_c     = 0.06141; % explosive density [lbf/in^3]
-rho_m     = 0.2836;  % casing material density, steel [lbf/in^3]
-rho_m = [0.2836; 0.16004 ;0.06900]; % Material Density [lbf/in3] 
-% Material Densities Used are AISI 4340 Steel, Ti-6Al-4V Titanium, 7075-T6
+% Material Densities [lbf/in^3]: AISI 4340 Steel, Ti-6Al-4V Titanium, 7075-T6 Al
+rho_m     = [0.2836; 0.16004; 0.06900];
+rho_m_names = {'Steel (AISI 4340)', 'Titanium (Ti-6Al-4V)', 'Aluminum (7075-T6)'};
 L_warhead = 39;      % warhead length [in]
 Pd_req    = 0.90;    % required damage probability (90%)
 approach_deg = 0;    % approach angle [deg]: 0 = nose-on, 90 = broadside
-m = 30.8647; % grains (2 grams)
-phi_half = 10; % [degrees] Provided Angle 
 
 %% Impact angles
 phi_vec = [45, 60, 90];  % [deg]
@@ -51,15 +49,19 @@ for i = 1:size(targetMapping, 1)
            tLib.Afront * abs(sin(phi_mean_rad) * cos(approach_rad)) + ...
            tLib.Aside  * abs(sin(phi_mean_rad) * sin(approach_rad));
 
-    % Compute fragment count, Pd check, and fuzing distance
-    [k, Pd, r] = fragFuzeCompute(Do, t_wall, rho_c, rho_m, L_warhead, Aeff, Pd_req);
-
-    fprintf('  %-10s ("%s")\n', displayName, libName);
-    fprintf('    A_eff = %.1f ft^2 | k = %.0f frags | r_fuze = %.2f m | Pd = %.1f%%\n\n', ...
-            Aeff, k, r, Pd);
+    % Compute for all three materials; use steel (index 1) for pixel-fill
+    fprintf('  %-10s ("%s") | A_eff = %.1f ft^2\n', displayName, libName, Aeff);
+    r_all = zeros(length(rho_m), 1);
+    for mat = 1:length(rho_m)
+        [k_mat, Pd_mat, r_mat] = fragFuzeCompute(Do, t_wall, rho_c, rho_m(mat), L_warhead, Aeff, Pd_req);
+        r_all(mat) = r_mat;
+        fprintf('    [%s] k=%.0f frags | r_fuze=%.2f m | Pd=%.1f%%\n', ...
+                rho_m_names{mat}, k_mat, r_mat, Pd_mat);
+    end
+    fprintf('\n');
 
     targets(i).name = displayName;
-    targets(i).L    = tLib.L_m;  % characteristic dimension [m]
-    targets(i).r    = r;          % fuzing distance [m]
+    targets(i).L    = tLib.L_m;   % characteristic dimension [m]
+    targets(i).r    = r_all(1);   % fuzing distance [m], steel selected
 end
 fprintf('-----------------------------------\n\n');
