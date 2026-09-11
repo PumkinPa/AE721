@@ -1,12 +1,5 @@
-function [eps_target, n_pixels] = targetPixelSpan(L_target, r, eps_i)
-    % INPUTS:
-    %   L_target : target characteristic dimension [m]
-    %   r        : fuzing distance / slant range [m]
-    %   eps_i    : per-pixel off-axis angle vector [rad]
-    % OUTPUTS:
-    %   eps_target : half-angle subtended by target [rad]
-    %   n_pixels   : number of pixels spanning the target [-]
+function [epsTarget, numSpanningPixels] = targetPixelSpan(L_target, r, eps_i)
 
-    eps_target = atan((L_target / 2) / r);
-    n_pixels   = sum(abs(eps_i) <= eps_target);
+    epsTarget = atan((L_target / 2) / r);
+    numSpanningPixels = sum(abs(eps_i) <= epsTarget);
 end

@@ -1,8 +1,8 @@
 %% Inputs
 %% Sensor parameters
-num_pixels       = 128;          
-pixel_pitch  = 30e-6;% m
-focal_length        = 0.05;% m
+numPixels       = 128;          
+pixelWidth  = 30e-6;% m
+focalLength        = 0.05;% m
 
 %% ---- TARGET DATA (from Section 1) ----
 % One fuzing distance r per target from your Step 5
