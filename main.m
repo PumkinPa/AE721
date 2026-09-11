@@ -1,5 +1,8 @@
 %% MAIN EXECUTION
+clc; clear all; close all;
+
 inputs;
+
 
 eps_i     = pixelAngles(numPixels, pixelWidth, focalLength);
 eps_i_deg = rad2deg(eps_i);

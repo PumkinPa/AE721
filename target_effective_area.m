@@ -29,11 +29,7 @@
 % given (aircraft, boats, drones, rotorcraft, missiles), front/side/top
 % areas are calculated using the simple approximations. Adjust the tunable
 
-clear; clc; close all;
-
-%% TUNABLE ASSUMPTIONS
-fuselageWidthFrac = 0.12;   % ASSUMPTION
-
+clc; close all;
 
 % USER INPUT: Pan Angle
 % Choose angle
@@ -69,61 +65,8 @@ end
 impact_rad = deg2rad(impact_deg);
 approach_rad = deg2rad(approach_deg);
 
-% TARGET LIBRARY
-% Each target: name, category, A_front [ft^2], A_side [ft^2], A_top [ft^2]
-
-targets = struct('name', {}, 'category', {}, 'Afront', {}, 'Aside', {}, 'Atop', {}, 'src', {});
-
-% Buildings / fixed infrastructure
-targets(end+1) = mkTarget('Building (generic 3-story)', 'Infrastructure', 2200, 2200, 2500, 'S'); % square 50x50 footprint
-
-targets(end+1) = mkTarget('Radar Site Building (RRH)', 'Infrastructure', 800, 1312, 4100, 'S'); % 50ft face=800, 82ft face=1312, roof=4100
-
-targets(end+1) = mkTarget('Radar Dome (radome)', 'Infrastructure', 1385, 1385, 1385, 'S'); % axisymmetric dome
-
-% Ground vehicles (trucks)
-targets(end+1) = mkTarget('Light Tactical Vehicle', 'Ground Vehicle', 42, 90, 105, 'S');
-
-targets(end+1) = mkTarget('Medium Tactical Vehicle / 2.5-Ton Cargo', 'Ground Vehicle', 80, 250, 200, 'S');
-
-targets(end+1) = mkTarget('Heavy Tactical Truck', 'Ground Vehicle', 80, 350, 280, 'S');
-
-% Small boat
-boatL = 40; boatW = 12; boatH = 5;
-targets(end+1) = mkTarget('Small Boat', 'Maritime', boatW*boatH, boatL*boatH, 500, 'D');
-
-% Fixed-wing aircraft (parked)
-acft = { ...
-    'Small Fighter (parked)', 50, 24, 15, 250; 'Medium-Large Multirole Fighter', 62, 42, 18, 550; 'Large Cargo Plane', 140,150, 45, 2500 };
-
-for i = 1:size(acft,1)
-    name = acft{i,1}; L = acft{i,2}; span = acft{i,3}; H = acft{i,4}; Awing = acft{i,5};
-    Aside = L*H;
-    Afront = H * (fuselageWidthFrac*span);
-    targets(end+1) = mkTarget(name, 'Fixed-Wing Aircraft', Afront, Aside, Awing, 'D');
-end
-
-% Drone (Class 3+)
-% Same approximation approach as fixed-wing aircraft above
-
-droneL = 35; droneSpan = 60; droneH = 8; droneWing = 175;
-targets(end+1) = mkTarget('Drone (Class 3+)', 'Air Threat', droneH*(fuselageWidthFrac*droneSpan), droneL*droneH, droneWing, 'D');
-
-% Rotorcraft (medium)
-
-rotL = 50; rotD = 55; rotH = 16; rotW = 8;
-targets(end+1) = mkTarget('Rotorcraft (medium)', 'Air Threat', rotW*rotH, rotL*rotH, (pi/4)*rotD^2, 'D');
-
-% Missiles (modeled as cylinders: front = circular cross-section,
-%     side = length*diameter, top = same as side by axisymmetry)
-missiles = { 'Small Air-to-Air Missile', 7/12,  10;'Small Surface-to-Air Missile', 3.5/12, 5;'Large Surface-to-Air Missile', 15/12, 25};
-
-for i = 1:size(missiles,1)
-    name = missiles{i,1}; d = missiles{i,2}; L = missiles{i,3};
-    Afront = (pi/4)*d^2;
-    Aside = L*d;
-    targets(end+1) = mkTarget(name, 'Missile', Afront, Aside, Aside, 'D');
-end
+%% Load shared target library
+targets = targetLibrary();
 
 %% COMPUTE EFFECTIVE AREA CURVES
 for i = 1:numel(targets)
@@ -161,12 +104,3 @@ for c = 1:numel(categories)
     legend('Location','bestoutside');
 end
 
-%% HELPER FUNCTION
-function t = mkTarget(name, category, Afront, Aside, Atop, src)
-    t.name = name;
-    t.category = category;
-    t.Afront = Afront;
-    t.Aside = Aside;
-    t.Atop = Atop;
-    t.src = src;
-end
