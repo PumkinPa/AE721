@@ -1,36 +1,68 @@
-%% Target effective area
+function [targets, sweepVar_deg, sweepLabel] = target_effective_area(sweepType, fixedAngle_deg)
+%TARGET_EFFECTIVE_AREA  Compute and plot effective (presented) projected area.
+%   TARGETS = TARGET_EFFECTIVE_AREA() prompts for a sweep type and fixed
+%   angle, then computes and plots A_eff for the shared target library.
+%
+%   TARGETS = TARGET_EFFECTIVE_AREA(SWEEPTYPE, FIXEDANGLE_DEG) skips the
+%   prompts so it can be called from another file/script.
+%       SWEEPTYPE = 1 : sweep APPROACH ANGLE (nose <-> side) at a fixed
+%                       IMPACT ANGLE = FIXEDANGLE_DEG (default 45)
+%       SWEEPTYPE = 2 : sweep IMPACT ANGLE (top-down <-> level) at a fixed
+%                       APPROACH ANGLE = FIXEDANGLE_DEG (default 0)
+%
+%   [TARGETS, SWEEPVAR_DEG, SWEEPLABEL] = TARGET_EFFECTIVE_AREA(...) also
+%   returns the swept angle vector [deg] and its plot label.
+%
+%   MODEL
+%   A_eff(impact, approach) = A_top   * |cos(impact)|
+%                    + A_front * |sin(impact) * cos(approach)|
+%                    + A_side  * |sin(impact) * sin(approach)|
+%
+%   impact   = impact angle, measured down from straight-down:
+%          impact = 0 deg  -> looking straight down (pure top view)
+%          impact = 90 deg -> looking level at the horizon (no top face visible)
+%   approach = approach angle about the vertical axis:
+%          approach = 0 deg  -> nose/tail-on
+%          approach = 90 deg -> broadside
+%
+%   DATA SOURCE
+%   Values are taken directly from calculated face areas where given
+%   (buildings, radar site, trucks). Where outer dimensions were given
+%   (aircraft, boats, drones, rotorcraft, missiles), front/side/top areas
+%   are calculated using simple approximations. See targetLibrary.m.
 
-clc; close all;
-
-% USER INPUT: Pan Angle
-% Choose angle
-
-fprintf('Pan sweep type:\n');
-fprintf('  1 = Sweep APPROACH ANGLE (nose <-> side) at a fixed IMPACT ANGLE\n');
-fprintf('  2 = Sweep IMPACT ANGLE (top-down <-> level) at a fixed APPROACH ANGLE\n');
-sweepType = input('Enter 1 or 2 [default 1]: ');
-if isempty(sweepType)
-    sweepType = 1;
+if nargin < 1 || isempty(sweepType)
+    fprintf('Pan sweep type:\n');
+    fprintf('  1 = Sweep APPROACH ANGLE (nose <-> side) at a fixed IMPACT ANGLE\n');
+    fprintf('  2 = Sweep IMPACT ANGLE (top-down <-> level) at a fixed APPROACH ANGLE\n');
+    sweepType = input('Enter 1 or 2 [default 1]: ');
+    if isempty(sweepType)
+        sweepType = 1;
+    end
 end
 
 if sweepType == 1
-    fixedImpact_deg = input('Enter the fixed impact angle in deg (0=level, 90=straight down) [default 45]: ');
-    if isempty(fixedImpact_deg)
-        fixedImpact_deg = 45;
+    if nargin < 2 || isempty(fixedAngle_deg)
+        fixedAngle_deg = input('Enter the fixed impact angle in deg (0=level, 90=straight down) [default 45]: ');
+        if isempty(fixedAngle_deg)
+            fixedAngle_deg = 45;
+        end
     end
     approach_deg = 0:1:90; % 0 = nose-on, 90 = broadside
-    impact_deg = fixedImpact_deg * ones(size(approach_deg));
+    impact_deg = fixedAngle_deg * ones(size(approach_deg));
     sweepVar_deg = approach_deg;
-    sweepLabel = sprintf('Approach Angle (deg)  [impact angle fixed at %g deg]', fixedImpact_deg);
+    sweepLabel = sprintf('Approach Angle (deg)  [impact angle fixed at %g deg]', fixedAngle_deg);
 else
-    fixedApproach_deg = input('Enter the fixed approach angle in deg (0=nose-on, 90=broadside) [default 0]: ');
-    if isempty(fixedApproach_deg)
-        fixedApproach_deg = 0;
+    if nargin < 2 || isempty(fixedAngle_deg)
+        fixedAngle_deg = input('Enter the fixed approach angle in deg (0=nose-on, 90=broadside) [default 0]: ');
+        if isempty(fixedAngle_deg)
+            fixedAngle_deg = 0;
+        end
     end
     impact_deg = 0:1:90; % 0 = level, 90 = straight down
-    approach_deg = fixedApproach_deg * ones(size(impact_deg));
+    approach_deg = fixedAngle_deg * ones(size(impact_deg));
     sweepVar_deg = impact_deg;
-    sweepLabel = sprintf('Impact Angle (deg)  [approach angle fixed at %g deg]', fixedApproach_deg);
+    sweepLabel = sprintf('Impact Angle (deg)  [approach angle fixed at %g deg]', fixedAngle_deg);
 end
 
 impact_rad = deg2rad(impact_deg);
@@ -75,3 +107,4 @@ for c = 1:numel(categories)
     legend('Location','bestoutside');
 end
 
+end
